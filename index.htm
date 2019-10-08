@@ -1,0 +1,332 @@
+<html>
+<title>Firebase Realtime Database Web</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style type="text/css">
+    .new {
+        align-items: center;
+        background-color: #d7d7d7;
+        font-family: "Times New Roman", Times, serif;
+        box-shadow: 5px 5px 5px #908E8D;
+        text-align: center;
+        margin: auto;
+        width: 50%;
+        border: 3px #00b300;
+        padding: 10px;
+        font-weight: bold;
+        border-radius: 24px;
+        opacity: 0.93;
+        height: 47.7%;
+        font-size: 20px;
+        text-align: center;
+        position: center;
+        overflow-y: scroll;
+    }
+    
+    .new:hover {
+        background-image: linear-gradient(45deg, pink, violet);
+        box-shadow: 12px 12px 13px;
+    }
+    
+    table {
+        box-shadow: 3px 3px 4px green
+    }
+    
+    td {
+        padding: 5px;
+    }
+    
+    tr {
+        padding: 4px;
+    }
+    
+    body {
+        background-position: center;
+        opacity: 0.9;
+        min-height: 100%;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center;
+        background-size: cover;
+        font-family: 'Open Sans', sans-serif;
+        overflow-y: scroll;
+    }
+    
+    h2 {
+        color: #2929a3;
+    }
+    
+    h1 {
+        color: rgb(192, 24, 24);
+        text-shadow: 1px 1px 1px red;
+        text-align: center;
+    }
+    
+    .note {
+        color: red;
+        font-size: 20px;
+    }
+    
+    #tbl_users_list {
+        color: black;
+        font-size: 15px;
+        padding: 8px;
+    }
+    
+    #tbl_users_list:hover {
+        font-size: 102%;
+        font-weight: 200;
+    }
+    
+    button {
+        background-color: #00b300;
+        /* Green */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+    
+    button:hover {
+        background-color: darkgreen;
+    }
+    
+    .h {
+        text-align: center;
+        box-shadow: 2px 3px 3px red;
+    }
+</style>
+
+
+
+<script src="https://www.gstatic.com/firebasejs/7.1.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyDuDG43gBRJnhP21rQBy26MB39LN57jNLQ",
+        authDomain: "hello-6ee76.firebaseapp.com",
+        databaseURL: "https://hello-6ee76.firebaseio.com",
+        projectId: "hello-6ee76",
+        storageBucket: "hello-6ee76.appspot.com",
+        messagingSenderId: "258708985298"
+    };
+    firebase.initializeApp(config);
+</script>
+
+</head>
+
+<body>
+    <div id="particles-js">
+        <div class="h">
+            <h1>BLOOD MANAGEMENT SYSTEM</h1>
+        </div>
+        <table class="new">
+            <tr>
+                <td>ID: </td>
+                <td><input type="text" name="id" id="user_id" /></td>
+            </tr>
+            <tr>
+                <td>Date: </td>
+                <td><input type="text" name="date" id="date" placeholder="DD/MM/YYYY" /></td>
+            </tr>
+            <tr>
+                <td>Hospital Name: </td>
+                <td><input type="text" name="name" id="name" /></td>
+            </tr>
+            <tr>
+                <td>Address: </td>
+                <td><input type="text" name="address" id="address" /></td>
+            </tr>
+            <tr>
+                <td>O+: </td>
+                <td><input type="text" name="op" id="op" placeholder="litres" /></td>
+            </tr>
+            <tr>
+                <td>O-: </td>
+                <td><input type="text" name="on" id="on" placeholder="litres" /></td>
+            </tr>
+            <tr>
+                <td>A+: </td>
+                <td><input type="text" name="ap" id="ap" placeholder="litres" /></td>
+            </tr>
+            <tr>
+                <td> A-: </td>
+                <td><input type="text" name="an" id="an" placeholder="litres" /></td>
+            </tr>
+            <tr>
+                <td>B+</td>
+                <td><input type="text" name="bp" id="bp" placeholder="litres" /></td>
+            </tr>
+            <tr>
+                <tr>
+                    <td>B-</td>
+                    <td><input type="text" name="bn" id="bn" placeholder="litres" /></td>
+                </tr>
+                <tr>
+                    <td>AB+</td>
+                    <td><input type="text" name="abp" id="abp" placeholder="litres" /></td>
+                </tr>
+                <tr>
+                    <tr>
+                        <td>AB-</td>
+                        <td><input type="text" name="abn" id="abn" placeholder="litres" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <button><input type="button" value="Save" onclick="save_user();" /></button>
+
+                            <input type="button" value="Delete" onclick="delete_user();" />
+                        </td>
+                    </tr>
+
+        </table>
+    </div>
+    <h1>List</h1>
+
+    <table id="tbl_users_list" border="1px" bordercolor="green" borderstyle="solid " style="width: 100%; ">
+        <tr>
+            <td>#ID</td>
+            <td>Date</td>
+            <td>Hospital Name</td>
+            <td>Addressr</td>
+            <td>O+</td>
+            <td>O-</td>
+            <td>A+</td>
+            <td>A-</td>
+            <td>B+</td>
+            <td>B-</td>
+            <td>AB+</td>
+            <td>AB-</td>
+        </tr>
+    </table>
+
+    <script>
+        var tblUsers = document.getElementById('tbl_users_list');
+        var databaseRef = firebase.database().ref('users/');
+        var rowIndex = 1;
+
+        databaseRef.once('value', function(snapshot) {
+            snapshot.forEach(function(childSnapshot) {
+                var childKey = childSnapshot.key;
+                var childData = childSnapshot.val();
+                var row = tblUsers.insertRow(rowIndex);
+                var cellId = row.insertCell(0);
+                var celldate = row.insertCell(1);
+                var cellname = row.insertCell(2);
+                var celladdress = row.insertCell(3);
+                var cellop = row.insertCell(4);
+                var cellon = row.insertCell(5);
+                var cellap = row.insertCell(6);
+                var cellan = row.insertCell(7);
+                var cellbp = row.insertCell(8);
+                var cellbn = row.insertCell(9);
+                var cellabp = row.insertCell(10);
+                var cellabn = row.insertCell(11);
+
+                cellId.appendChild(document.createTextNode(childKey));
+                celldate.appendChild(document.createTextNode(childData.date));
+                cellname.appendChild(document.createTextNode(childData.name));
+                celladdress.appendChild(document.createTextNode(childData.address));
+                cellop.appendChild(document.createTextNode(childData.op));
+                cellon.appendChild(document.createTextNode(childData.on));
+                cellap.appendChild(document.createTextNode(childData.ap));
+                cellan.appendChild(document.createTextNode(childData.an));
+                cellbp.appendChild(document.createTextNode(childData.bp));
+                cellbn.appendChild(document.createTextNode(childData.bn));
+                cellabp.appendChild(document.createTextNode(childData.abp));
+                cellabn.appendChild(document.createTextNode(childData.abn));
+                rowIndex = rowIndex + 1;
+            });
+        }); //<div id="d">gassg</div>
+
+        function save_user() {
+            var uid = firebase.database().ref().child('users').push().key;
+            var date = document.getElementById('date').value;
+            var name = document.getElementById('name').value;
+            var address = document.getElementById('address').value;
+            var op = document.getElementById('op').value;
+            var on = document.getElementById('on').value;
+            var ap = document.getElementById('ap').value;
+            var an = document.getElementById('an').value;
+            var bp = document.getElementById('bp').value;
+            var bn = document.getElementById('bn').value;
+            var abp = document.getElementById('abp').value;
+            var abn = document.getElementById('abn').value;
+
+
+
+            var data = {
+                user_id: uid,
+                date: date,
+                name: name,
+                address: address,
+                op: op,
+                on: on,
+                ap: ap,
+                an: an,
+                bp: bp,
+                bn: bn,
+                abp: abp,
+                abn: abn,
+
+
+            }
+
+            var updates = {};
+            updates['/users/' + uid] = data;
+            firebase.database().ref().update(updates);
+
+            alert('The user is created successfully!');
+            reload_page();
+        }
+
+        function update_user() {
+            var user_name = document.getElementById('user_name').value;
+            var user_id = document.getElementById('user_id').value;
+            var source = document.getElementById('source').value;
+            var destination = document.getElementById('destination').value;
+            var notam_number = document.getElementById('notam_number').value;
+            var notam = document.getElementById('notam').value;
+            var decoded = document.getElementById('decoded').value;
+            var data = {
+                user_id: user_id,
+                user_name: user_name,
+                source: source,
+                destination: destination,
+                notam_number: notam_number,
+                notam: notam,
+                decoded: decoded
+
+            }
+
+
+        }
+
+        function delete_user() {
+            var user_id = document.getElementById('user_id').value;
+
+            firebase.database().ref().child('/users/' + user_id).remove();
+            alert('The user is deleted successfully!');
+            reload_page();
+        }
+
+        function reload_page() {
+            window.location.reload();
+        }
+    </script>
+
+
+</body>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+<script>
+    particlesJS.load('particles-js', 'particles.json', function() {
+        console.log('particles.json loaded...');
+    });
+</script>
+
+</html>
